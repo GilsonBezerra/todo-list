@@ -16,6 +16,8 @@ export class HomePage implements OnInit{
     private actionSheetCtrl: ActionSheetController
   ) { }
 
+  //Não precisa ir no constructor
+
   ngOnInit(): void {
     const tasksJson = localStorage.getItem('tasksDb');
 
