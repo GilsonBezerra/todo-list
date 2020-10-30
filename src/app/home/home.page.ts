@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActionSheetController, AlertController, ToastController } from '@ionic/angular';
 
 @Component({
@@ -6,7 +6,7 @@ import { ActionSheetController, AlertController, ToastController } from '@ionic/
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit{
 
   tasks: any[] = [];
 
@@ -15,6 +15,14 @@ export class HomePage {
     private toastCtrl: ToastController,
     private actionSheetCtrl: ActionSheetController
   ) { }
+
+  ngOnInit(): void {
+    const tasksJson = localStorage.getItem('tasksDb');
+
+    if (tasksJson !== null) {
+      this.tasks = JSON.parse(tasksJson);
+    }
+  }
 
   async showAdd() {
     const alert = this.alertCtrl.create({
@@ -60,7 +68,9 @@ export class HomePage {
     }
     let task = { name: taskToDo, done: false };
     this.tasks.push(task);
+    this.updateLocalStorage();
   }
+
 
   async openActions(task: any) {
   const actionSheet = await this.actionSheetCtrl.create({
@@ -70,6 +80,7 @@ export class HomePage {
       icon: task.done ? 'radio-button-off' : 'checkmark-circle',
       handler: () => {
         task.done = !task.done;
+        this.updateLocalStorage();
       }
     },
       {
@@ -85,5 +96,13 @@ export class HomePage {
   await actionSheet.present();
 }
 
+  public updateLocalStorage() {
+    localStorage.setItem('tasksDb', JSON.stringify(this.tasks));
+  }
+
+  public delete(task: any) {
+    this.tasks = this.tasks.filter(taskArray => task !== taskArray);
+    this.updateLocalStorage();
+  }
 
 }
